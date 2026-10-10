@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>October Reminder | Merry Sunshine Montessori School</title>
+<style>
+  :root{
+    --yellow:#FFEB3B;
+    --coral:#F88379;
+    --blue:#82C8E5;
+    --beige:#E6D8C4;
+    --brown:#654321;
+    --text:#333;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    font-family:Arial,Helvetica,sans-serif;
+    background:linear-gradient(135deg,#fffdf2,#f7fbfd);
+    color:var(--text);
+  }
+  .card{
+    width:100%;
+    max-width:600px;
+    background:#fff;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 10px 35px rgba(0,0,0,.12);
+  }
+  .header{
+    text-align:center;
+    padding:25px 20px 18px;
+    background:#fff;
+  }
+  .school{
+    margin:0;
+    font-size:20px;
+    font-weight:800;
+    line-height:1.25;
+    color:var(--brown);
+  }
+  .city{
+    margin:6px 0 0;
+    font-size:13px;
+    letter-spacing:.5px;
+    color:#666;
+  }
+  .stripe{
+    display:flex;
+    height:7px;
+    margin-top:18px;
+  }
+  .stripe span{flex:1}
+  .stripe span:nth-child(1){background:var(--yellow)}
+  .stripe span:nth-child(2){background:var(--coral)}
+  .stripe span:nth-child(3){background:var(--blue)}
+  .content{
+    padding:30px 26px 28px;
+  }
+  h1{
+    margin:0 0 10px;
+    text-align:center;
+    color:var(--brown);
+    font-size:30px;
+  }
+  .intro{
+    text-align:center;
+    color:#666;
+    line-height:1.5;
+    margin:0 0 26px;
+  }
+  label{
+    display:block;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  input{
+    width:100%;
+    padding:15px;
+    border:2px solid #ddd;
+    border-radius:12px;
+    font-size:24px;
+    text-align:center;
+    letter-spacing:5px;
+    outline:none;
+  }
+  input:focus{border-color:var(--blue)}
+  button,a{
+    width:100%;
+    display:block;
+    border:0;
+    border-radius:12px;
+    padding:15px;
+    margin-top:16px;
+    font-size:16px;
+    font-weight:700;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  #viewBtn{
+    background:var(--coral);
+    color:#fff;
+  }
+  #viewBtn:disabled,#confirmBtn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+  }
+  #result{
+    display:none;
+    margin-top:22px;
+    padding:18px;
+    border-radius:16px;
+    background:#faf7f0;
+    border:1px solid var(--beige);
+  }
+  #result h2{
+    margin:0 0 7px;
+    text-align:center;
+    color:var(--brown);
+    font-size:19px;
+  }
+  #result p{
+    margin:0;
+    text-align:center;
+    color:#666;
+    font-size:13px;
+    line-height:1.45;
+  }
+  #openBtn{
+    background:var(--blue);
+    color:#183b49;
+  }
+  #confirmBtn{
+    background:var(--yellow);
+    color:#4d4300;
+  }
+  #status{
+    min-height:24px;
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+    line-height:1.4;
+  }
+  .info{color:#555}
+  .success{color:#16803c}
+  .error{color:#b00020}
+  .note{
+    margin:18px 0 0;
+    text-align:center;
+    font-size:11px;
+    color:#999;
+  }
+</style>
+</head>
+
+<body>
+<div class="card">
+
+  <header class="header">
+    <div class="school">MERRY SUNSHINE MONTESSORI SCHOOL, INC.</div>
+    <div class="city">Cauayan City, Isabela</div>
+    <div class="stripe"><span></span><span></span><span></span></div>
+  </header>
+
+  <main class="content">
+    <h1>OCTOBER REMINDER</h1>
+
+    <p class="intro">
+      Enter the last 7 digits of your child's LRN to view the October Reminder.
+    </p>
+
+    <label for="lrn">Last 7 digits of LRN</label>
+    <input
+      id="lrn"
+      type="text"
+      inputmode="numeric"
+      maxlength="7"
+      autocomplete="off"
+      placeholder="1234567"
+      aria-label="Last 7 digits of LRN"
+    >
+
+    <button id="viewBtn" type="button">VIEW MY REMINDER</button>
+
+    <div id="status" aria-live="polite"></div>
+
+    <section id="result">
+      <h2>Your Reminder is Ready</h2>
+      <p>
+        Click below to open your October Reminder. After viewing it,
+        return here and confirm that you received it.
+      </p>
+
+      <a id="openBtn" href="#" target="_blank" rel="noopener">
+        OPEN MY REMINDER
+      </a>
+
+      <button id="confirmBtn" type="button">
+        ✓ I HAVE RECEIVED IT
+      </button>
+    </section>
+
+    <p class="note">Please enter exactly 7 digits.</p>
+  </main>
+</div>
+
+<script>
+const SUPABASE_URL = "https://xeqwoosngozglcrkntkq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_XHleaeESHxvoFqsIb_Rt_A_e1MZocxS";
+
+const GET_FUNCTION =
+  SUPABASE_URL + "/functions/v1/get-october-reminder";
+
+const CONFIRM_FUNCTION =
+  SUPABASE_URL + "/functions/v1/confirm-october-reminder";
+
+const lrnInput = document.getElementById("lrn");
+const viewBtn = document.getElementById("viewBtn");
+const status = document.getElementById("status");
+const result = document.getElementById("result");
+const openBtn = document.getElementById("openBtn");
+const confirmBtn = document.getElementById("confirmBtn");
+
+let currentLrn = "";
+
+function setStatus(message, type) {
+  status.textContent = message;
+  status.className = type || "";
+}
+
+lrnInput.addEventListener("input", () => {
+  lrnInput.value = lrnInput.value.replace(/\D/g, "").slice(0, 7);
+  result.style.display = "none";
+  openBtn.href = "#";
+  currentLrn = "";
+  setStatus("", "");
+});
+
+async function callFunction(url, lrn) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_PUBLISHABLE_KEY,
+      "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
+    },
+    body: JSON.stringify({
+      lrn_last7: lrn
+    })
+  });
+
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (e) {
+    throw new Error("Supabase returned an invalid response.");
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      data.message ||
+      ("Supabase request failed (" + response.status + ").")
+    );
+  }
+
+  return data;
+}
+
+viewBtn.addEventListener("click", async () => {
+  const lrn = lrnInput.value.trim();
+
+  result.style.display = "none";
+  openBtn.href = "#";
+
+  if (!/^\d{7}$/.test(lrn)) {
+    setStatus("Please enter exactly 7 digits.", "error");
+    return;
+  }
+
+  currentLrn = lrn;
+  viewBtn.disabled = true;
+  viewBtn.textContent = "SEARCHING...";
+  setStatus("Finding your October Reminder...", "info");
+
+  try {
+    const data = await callFunction(GET_FUNCTION, lrn);
+
+    console.log("GET REMINDER RESPONSE:", data);
+
+    if (!data.success) {
+      throw new Error(
+        data.error ||
+        data.message ||
+        "Reminder not found. Please check the LRN."
+      );
+    }
+
+    // Accept either property name so the HTML works with
+    // the two response formats used by our previous versions.
+    const pdfUrl = data.signed_url || data.url;
+
+    if (!pdfUrl) {
+      throw new Error(
+        "The Edge Function found a result but did not return a PDF URL."
+      );
+    }
+
+    openBtn.href = pdfUrl;
+    result.style.display = "block";
+    setStatus("Your October Reminder is ready.", "success");
+
+  } catch (error) {
+    console.error("GET REMINDER ERROR:", error);
+    result.style.display = "none";
+    setStatus(
+      error.message || "Unable to retrieve the October Reminder.",
+      "error"
+    );
+  } finally {
+    viewBtn.disabled = false;
+    viewBtn.textContent = "VIEW MY REMINDER";
+  }
+});
+
+confirmBtn.addEventListener("click", async () => {
+  if (!currentLrn) {
+    setStatus("Please look up your reminder first.", "error");
+    return;
+  }
+
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = "RECORDING...";
+  setStatus("Saving your confirmation...", "info");
+
+  try {
+    const data = await callFunction(CONFIRM_FUNCTION, currentLrn);
+
+    console.log("CONFIRMATION RESPONSE:", data);
+
+    if (!data.success) {
+      throw new Error(
+        data.error ||
+        data.message ||
+        "Unable to record confirmation."
+      );
+    }
+
+    confirmBtn.textContent = "✓ RECEIVED — THANK YOU!";
+    setStatus(
+      "Your confirmation has been recorded successfully.",
+      "success"
+    );
+
+  } catch (error) {
+    console.error("CONFIRMATION ERROR:", error);
+    setStatus(
+      error.message || "Unable to save your confirmation.",
+      "error"
+    );
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = "✓ I HAVE RECEIVED IT";
+  }
+});
+</script>
+
+</body>
+</html>
