@@ -289,7 +289,7 @@ viewBtn.addEventListener("click", async () => {
   currentLrn = lrn;
   viewBtn.disabled = true;
   viewBtn.textContent = "SEARCHING...";
-  setStatus("Finding your October Reminder...", "info");
+  setStatus("Finding your November Reminder...", "info");
 
   try {
     const data = await callFunction(GET_FUNCTION, lrn);
@@ -316,13 +316,13 @@ viewBtn.addEventListener("click", async () => {
 
     openBtn.href = pdfUrl;
     result.style.display = "block";
-    setStatus("Your October Reminder is ready.", "success");
+    setStatus("Your November Reminder is ready.", "success");
 
   } catch (error) {
     console.error("GET REMINDER ERROR:", error);
     result.style.display = "none";
     setStatus(
-      error.message || "Unable to retrieve the October Reminder.",
+      error.message || "Unable to retrieve the November Reminder.",
       "error"
     );
   } finally {
